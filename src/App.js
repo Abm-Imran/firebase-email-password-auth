@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
 import app from './firebase.init';
 import { Form } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
@@ -10,6 +10,7 @@ const auth = getAuth(app);
 
 function App() {
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,7 +25,7 @@ function App() {
     })
     .catch((error)=>{
       console.log(error);
-      setError(error);
+      setError(error.message);
     })
   }
 
@@ -35,11 +36,12 @@ function App() {
           console.log(result.user);
           setEmail('');
           setPassword('');
+          updateUserName();
           verifyEmail();
         })
         .catch(error => {
           console.error(error);
-          setError(error);
+          setError(error.message);
         })
     }
     else {
@@ -49,12 +51,12 @@ function App() {
         })
         .catch(error => {
           console.error(error);
-          setError(error);
+          setError(error.message);
         })
     }
     e.preventDefault();
-    // setEmail('');
-    // setPassword('');
+    setEmail('');
+    setPassword('');
 
   }
 
@@ -65,11 +67,30 @@ function App() {
       })
   }
 
+
+  const updateUserName = ()=>{
+    updateProfile(auth.currentUser,{
+      displayName: name
+    })
+    .then(()=>{
+      console.log('User Details Updated');
+    })
+    .catch((error)=>{
+      setError(error.message);
+    })
+  }
+
   const handleForgetPassword = () => {
     sendPasswordResetEmail(auth, email)
       .then(() => {
         console.log('Reset Password Email Sent');
       })
+  }
+
+ 
+
+  const handleNameChange = (e)=>{
+    setName(e.target.value)
   }
 
   const handleEmailChange = (e) => {
@@ -94,6 +115,11 @@ function App() {
     <div className="">
       <Form onSubmit={handleFormSubmit} className='w-50 mx-auto mt-2'>
         <h2 className='text-primary' >Please {registered ? 'Login' : 'Register'}</h2>
+        { (!registered) && <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Your name</Form.Label>
+          <Form.Control onBlur={handleNameChange} type="text" placeholder="Your name " required />
+        </Form.Group>}
+
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control onBlur={handleEmailChange} type="email" placeholder="Enter email" required />
