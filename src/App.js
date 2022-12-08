@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import app from './firebase.init';
 import { Form } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
@@ -16,17 +16,31 @@ function App() {
   const [registered, setRegistered] = useState(false);
 
   const handleFormSubmit = (e) => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(result => {
-        console.log(result.user);
+    if (!registered) {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(result => {
+          console.log(result.user);
+          setEmail('');
+          setPassword('');
+        })
+        .catch(error => {
+          console.error(error);
+          setError(error);
+        })
+    }
+    else{
+      signInWithEmailAndPassword(auth, email, password)
+      .then(result =>{
+        console.log('Login successfull', result.user);
       })
       .catch(error => {
         console.error(error);
         setError(error);
       })
+    }
     e.preventDefault();
-    setEmail('');
-    setPassword('');
+    // setEmail('');
+    // setPassword('');
 
   }
 
@@ -40,7 +54,7 @@ function App() {
     setPassword(e.target.value);
   }
 
-  const handleRegistered = (e)=>{
+  const handleRegistered = (e) => {
     // console.log(e.target.checked);
     setRegistered(e.target.checked);
   }
@@ -63,7 +77,7 @@ function App() {
           <Form.Control onBlur={handlePasswordChange} type="password" placeholder="Password" required />
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
-          <Form.Check onClick={handleRegistered} type="checkbox" label="Already Registered ?" />
+          <Form.Check onChange={handleRegistered} type="checkbox" label="Already Registered ?" />
         </Form.Group>
         <p>{error}</p>
         <Button variant="primary" type="submit">
