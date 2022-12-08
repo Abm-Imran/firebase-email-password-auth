@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import app from './firebase.init';
 import { Form } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
@@ -14,6 +14,19 @@ function App() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [registered, setRegistered] = useState(false);
+
+  const googleProvider = new GoogleAuthProvider();
+
+  const handleGoogleSignIn =()=>{
+    signInWithPopup(auth, googleProvider)
+    .then(result =>{
+      console.log(result.user);
+    })
+    .catch((error)=>{
+      console.log(error);
+      setError(error);
+    })
+  }
 
   const handleFormSubmit = (e) => {
     if (!registered) {
@@ -97,6 +110,7 @@ function App() {
           <Form.Check onChange={handleRegistered} type="checkbox" label="Already Registered ?" />
         </Form.Group>
         <Button onClick={handleForgetPassword} variant="link">Forget Password?</Button>
+        <Button onClick={handleGoogleSignIn} variant="danger">Google SignIn</Button>
         <p>{error}</p>
         <Button variant="primary" type="submit">
           {registered ? 'Log-In' : 'Register'}
