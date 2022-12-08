@@ -13,6 +13,7 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [registered, setRegistered] = useState(false);
 
   const handleFormSubmit = (e) => {
     createUserWithEmailAndPassword(auth, email, password)
@@ -38,10 +39,17 @@ function App() {
     // console.log(e.target.value);
     setPassword(e.target.value);
   }
+
+  const handleRegistered = (e)=>{
+    // console.log(e.target.checked);
+    setRegistered(e.target.checked);
+  }
+
+
   return (
     <div className="">
       <Form onSubmit={handleFormSubmit} className='w-50 mx-auto mt-2'>
-        <h2 className='text-primary' >Please Register</h2>
+        <h2 className='text-primary' >Please {registered ? 'Login' : 'Register'}</h2>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control onBlur={handleEmailChange} type="email" placeholder="Enter email" required />
@@ -55,11 +63,11 @@ function App() {
           <Form.Control onBlur={handlePasswordChange} type="password" placeholder="Password" required />
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
-          <Form.Check type="checkbox" label="Check me out" />
+          <Form.Check onClick={handleRegistered} type="checkbox" label="Already Registered ?" />
         </Form.Group>
         <p>{error}</p>
         <Button variant="primary" type="submit">
-          Submit
+          {registered ? 'Log-In' : 'Register'}
         </Button>
       </Form>
     </div>
