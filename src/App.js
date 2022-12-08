@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import app from './firebase.init';
 import { Form } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
@@ -22,26 +22,34 @@ function App() {
           console.log(result.user);
           setEmail('');
           setPassword('');
+          verifyEmail();
         })
         .catch(error => {
           console.error(error);
           setError(error);
         })
     }
-    else{
+    else {
       signInWithEmailAndPassword(auth, email, password)
-      .then(result =>{
-        console.log('Login successfull', result.user);
-      })
-      .catch(error => {
-        console.error(error);
-        setError(error);
-      })
+        .then(result => {
+          console.log('Login successfull', result.user);
+        })
+        .catch(error => {
+          console.error(error);
+          setError(error);
+        })
     }
     e.preventDefault();
     // setEmail('');
     // setPassword('');
 
+  }
+
+  const verifyEmail = ()=>{
+    sendEmailVerification(auth.currentUser)
+    .then(()=>{
+      console.log('Send Email Verification');
+    })
   }
 
   const handleEmailChange = (e) => {
